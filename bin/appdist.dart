@@ -1,5 +1,6 @@
 import 'dart:io';
 import 'package:yaml/yaml.dart';
+import 'package:path/path.dart' as path;
 
 void main(List<String> arguments) async {
   if (arguments.isEmpty) {
@@ -38,7 +39,7 @@ void main(List<String> arguments) async {
       target == 'ios'
           ? ['build', 'ipa', '--release', '--export-method=ad-hoc']
           : ['build', 'apk', '--release'],
-      runInShell: true,
+      runInShell: Platform.isWindows,
     );
 
     print(buildResult.stdout);
@@ -55,8 +56,8 @@ void main(List<String> arguments) async {
       [
         'appdistribution:distribute',
         target == 'ios'
-            ? 'build/ios/ipa/*.ipa'
-            : 'build/app/outputs/flutter-apk/app-release.apk',
+            ? path.join('build', 'ios', 'ipa', '*.ipa')
+            : path.join('build', 'app', 'outputs', 'flutter-apk', 'app-release.apk'),
         '--app',
         target == 'ios' ? iosAppId : androidAppId,
         '--release-notes',
@@ -64,7 +65,7 @@ void main(List<String> arguments) async {
         '--testers',
         testers,
       ],
-      runInShell: true,
+      runInShell: Platform.isWindows,
     );
 
     print(distributeResult.stdout);
