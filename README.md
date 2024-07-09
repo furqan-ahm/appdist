@@ -1,11 +1,11 @@
 # appdist
-.
+probably works
 
 ## Installation
 
 1. Clone this repository or download the source code.
 
-2. Navigate to the project directory: cd path/to/app_dist_tool
+2. Navigate to the project directory: cd path/to/appdist
 
 3. Activate the package globally: dart pub global activate --source path .
 
@@ -26,6 +26,11 @@ Replace the placeholder values with your actual Firebase app IDs, release notes,
 
 From your Flutter project directory, run:
 
-For Android: app_dist apk
-
-For iOS: app_dist ios
+For Android: 
+```yaml
+app_dist apk
+```
+For iOS: 
+```yaml
+app_dist ios
+```
