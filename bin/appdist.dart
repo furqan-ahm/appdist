@@ -2,6 +2,37 @@ import 'dart:io';
 import 'package:yaml/yaml.dart';
 import 'package:path/path.dart' as path;
 
+Future<String> findIpaFile() async {
+  final directory = Directory(path.join('build', 'ios', 'ipa'));
+  if (!await directory.exists()) {
+    throw Exception('IPA directory not found');
+  }
+
+  final files = await directory.list().toList();
+  final ipaFile = files.firstWhere(
+    (file) => file.path.endsWith('.ipa'),
+    orElse: () => throw Exception('No IPA file found'),
+  );
+
+  return ipaFile.path;
+}
+
+Future<void> ensureConfigExists() async {
+  final configFile = File('app_dist_config.yaml');
+  if (!await configFile.exists()) {
+    print('app_dist_config.yaml not found. Generating a dummy file...');
+    await configFile.writeAsString('''
+android_app_id: "your_android_app_id_here"
+ios_app_id: "your_ios_app_id_here"
+release_notes: "Your release notes here"
+testers: "tester1@example.com,tester2@example.com"
+''');
+    print(
+        'Dummy app_dist_config.yaml generated. Please edit it with your actual app IDs and other details.');
+    exit(1);
+  }
+}
+
 void main(List<String> arguments) async {
   if (arguments.isEmpty) {
     print('Please specify a target: ios or apk');
@@ -13,6 +44,8 @@ void main(List<String> arguments) async {
     print('Invalid target. Please use either ios or apk');
     exit(1);
   }
+
+  await ensureConfigExists();
 
   final configPath = 'app_dist_config.yaml';
 
@@ -49,15 +82,21 @@ void main(List<String> arguments) async {
       exit(1);
     }
 
+    String appPath;
+    if (target == 'ios') {
+      appPath = await findIpaFile();
+    } else {
+      appPath = path.join(
+          'build', 'app', 'outputs', 'flutter-apk', 'app-release.apk');
+    }
+
     // Distribute the app
     print('Distributing ${target.toUpperCase()}...');
     final distributeResult = await Process.run(
       'firebase',
       [
         'appdistribution:distribute',
-        target == 'ios'
-            ? path.join('build', 'ios', 'ipa', '*.ipa')
-            : path.join('build', 'app', 'outputs', 'flutter-apk', 'app-release.apk'),
+        appPath,
         '--app',
         target == 'ios' ? iosAppId : androidAppId,
         '--release-notes',
