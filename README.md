@@ -3,11 +3,14 @@ probably works
 
 ## Installation
 
-1. Clone this repository or download the source code.
+1. Ensure that firebase cli is setup and logged in on your system
 
-2. Navigate to the project directory: cd path/to/appdist
+2. Run the following command
 
-3. Activate the package globally: dart pub global activate --source path .
+```yaml
+dart pub global activate --source git https://github.com/furqan-ahm/appdist
+```
+
 
 ## Configuration
 
