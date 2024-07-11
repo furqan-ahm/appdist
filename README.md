@@ -31,9 +31,9 @@ From your Flutter project directory, run:
 
 For Android: 
 ```yaml
-app_dist apk
+appdist apk
 ```
 For iOS: 
 ```yaml
-app_dist ios
+appdist ios
 ```
